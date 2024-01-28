@@ -81,7 +81,7 @@ class GenreFactory:
 
 class PublisherFactory:
     def name_publisher(self):
-        return faker.sentence(nb_words=random.randint(1, 3))
+        return faker.sentence(nb_words=random.randint(1, 5))
 
     def country(self):
         return faker.country()

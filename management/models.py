@@ -61,8 +61,8 @@ class Reservation(models.Model):
 
 
 class Credit(models.Model):
-    user = models.ForeignKey(User, to_field='username',
-                             on_delete=models.CASCADE)
+    user = models.OneToOneField(User, to_field='username',
+                                on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -132,12 +132,6 @@ class Notification(models.Model):
             'is_read',
             '-created_at',
         ]
-        # For Postgres
-        # from django.db.models import F
-        # ordering = [
-        #     F('is_read').desc(nulls_last=True),
-        #     '-created_at',
-        # ]
 
     def __str__(self):
         return f"{self.user}, {self.title}"
