@@ -1,0 +1,40 @@
+{% extends "base_message.html" %}
+
+{% block style-ext %}
+<style>
+  .text-explain {
+    margin: 5px 0;
+    color: rgb(39, 39, 39);
+    font-size: 16px;
+  }
+
+  .text-email {
+    color: black;
+    font-size: 18px;
+    width: max-content;
+    margin: 0 auto;
+  }
+
+  .link-reset {
+    color: rgb(0, 0, 80);
+    font-size: 20px;
+    margin: 5px auto;
+    display: block;
+    width: max-content;
+  }
+
+  .container-content {
+    width: 100%;
+  }
+</style>
+{% endblock style-ext %}
+
+{% block content %}
+<div class="container-content">
+  <p class="text-email">Hi {{ user|capfirst}}, </p>
+
+  <p class="text-explain">Welcome to Social Media Simulation You are receiving this e-mail because you or someone else create an account using e-mail</p>
+
+  <a href="{{ domain }}{% url 'account_confirm_email' uidb64=uid token=token %}" class="link-reset">Activate your account</a>
+</div>
+{% endblock content %}

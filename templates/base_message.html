@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Carbono smart</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .container{
+      width: 280px;
+
+      border: 1px solid rgb(0, 85, 0);
+      border-radius: 10px;
+      margin: 1rem auto;
+      position: relative;
+      box-shadow: 4px 1px 121px 24px rgba(0,0,0,0.75);
+      -webkit-box-shadow: 4px 1px 121px 24px rgba(0,0,0,0.75);
+      -moz-box-shadow: 4px 1px 121px 24px rgba(0,0,0,0.75);
+    }
+    .container1{
+      width: 275px;
+
+      border: 1px solid rgb(0, 85, 0);
+      border-radius: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 1rem;
+    }
+    .container-all{
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding-bottom: 1rem;
+    }
+    .container-logo{
+      width: 99%;
+      height: 160px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .img-logo{
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .title-project{
+      font-family: 'Times New Roman', Times, serif;
+      width: max-content;
+      margin: 0 auto 1rem auto;
+      font-size: 28px;
+    }
+    .container-footer{
+      margin-top: 10px;
+      width: 100%;
+      height: 140px;
+      background-color: rgba(0, 0, 0, 0.603);
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      padding-bottom: 1rem;
+    }
+    .container-socialcontacts{
+      width: 100%;
+    }
+    .footer-text{
+      display: block;
+      width: max-content;
+      margin: 0 auto;
+      color: rgb(228, 243, 255);
+      font-size: 14px;
+    }
+    .link-proyect{
+      display: block;
+      width: max-content;
+      margin: 1rem auto;
+      color: aliceblue !important;
+      font-size: 15px;
+      padding-bottom: 1rem;
+      box-shadow: 2px 2px 3px 3px white;
+    }
+    .link-proyect:hover{
+      font-size: 18px;
+    }
+    @media (min-width: 562px) {
+      .container{
+        width: 380px;
+
+      }
+      .container1{
+        width: 375px;
+
+      }
+      .title-project{
+        font-size: 30px;
+      }
+      .footer-text{
+        font-size: 16px;
+      }
+      .link-proyect{
+        font-size: 17px;
+      }
+    }
+    @media (min-width: 768px) {
+      .container{
+        width: 600px;
+      }
+      .container1{
+        width: 595px;
+      }
+      .title-project{
+        font-size: 32px;
+      }
+      .footer-text{
+        font-size: 18px;
+      }
+      .link-proyect{
+        font-size: 19px;
+      }
+      .link-proyect:hover{
+        font-size: 20px;
+      }
+    }
+    @media (min-width: 992px) {
+      .container{
+        width: 700px;
+      }
+      .container1{
+        width: 695px;
+      }
+      .title-project{
+        font-size: 34px;
+      }
+      .footer-text{
+        font-size: 18px;
+      }
+      .link-proyect{
+        font-size: 20px;
+      }
+      .link-proyect:hover{
+        font-size: 21px;
+      }
+    }
+    @media (min-width: 1200px){
+      .container{
+        width: 750px;
+      }
+      .container1{
+        width: 745px;
+      }
+      .title-project{
+        font-size: 36px;
+      }
+    }
+  </style>
+  {% block style-ext %}
+
+  {% endblock style-ext %}
+</head>
+<body>
+  <div class="container">
+    <div class="container1">
+      <div class="container-all">
+        <div class="container-logo">
+          <img src="https://i.ibb.co/fdbTBy7/test-image-500x500.jpg" class="img-logo" alt="">
+        </div>
+        <div class="container-title">
+          <h1 class="title-project">Social Media Simulation</h1>
+        </div>
+        {% block content %}
+        
+        {% endblock content %}
+        <div class="container-footer">
+          <p class="footer-text">Thank you for using Social Media Simulation!</p>
+          <p class="footer-text">You can contact us in our web.</p>
+          <a href="" class="link-proyect">theurloftheproyect.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,5042 @@
+openapi: 3.0.3
+info:
+  title: Library Management System RESTful API
+  version: 1.0.0
+  description: Your project description
+paths:
+  /author/:
+    get:
+      operationId: author_list
+      description: |-
+        List Authors.
+
+
+        ### URL Parameters :
+
+        - `search` (str): To find authors that contains in his body the "first_name/last_name".
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of authors to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of author objects.
+
+            - `count` (int): Amount of TOTAL objects.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str):  if exists, URL of the previous objects, otherwise null.
+
+            - `results` (array): List of objects.
+
+                - `id` (int): Author Identifier.
+
+                - `name` (str): Author First name + Last name.
+
+                - `biography` (str): Author Biography.
+
+                - `picture` (str): Path where is store the Author picture .
+
+                - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just leave it hanging in the void of null 😅.
+
+
+        ### Response(Failure):
+
+        - `404 Not Found`:
+        Author/s not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filtering by first_name/last_name content.
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListAuthorList'
+          description: ''
+    post:
+      operationId: author_create
+      description: |-
+        Create Author (Only Users with Admin Range).
+
+
+        ### Request Body :
+
+        - `id` (int): Author Identifier.
+
+        - `first_name` (str): Author First name.
+
+        - `last_name` (str): Author Last name.
+
+        - `biography` (str): Author Biography.
+
+        - `picture` (File): Binary for Author picture .
+
+        - `nationality` (str)(optional): ISO 3166-1 (alpha-2 code) of the country.
+
+        - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+        - `death_date` (str)(optional): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just leave it hanging in the void of null 😅.
+
+
+
+        ### Response(Success):
+
+        - `201 Create` : List of author objects.
+
+            - `detail` (str): Author successfully created.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /author/{id}/:
+    get:
+      operationId: author_retrieve
+      description: |-
+        Retrieve a single Author.
+
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the author to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of author objects.
+
+            - `id` (int): Author Identifier.
+
+            - `name` (str): Author First name + Last name.
+
+            - `biography` (str): Author Biography.
+
+            - `picture` (str): Path where is store the Author picture .
+
+            - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+            - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+            - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just leave it hanging in the void of null 😅.
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Pk not send or is invalid..
+
+        - `404 Not Found`:
+        Author/s not be found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Author.
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthor'
+          description: ''
+    put:
+      operationId: author_update
+      description: METHOD NOT ALLOWED.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Author.
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      responses:
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    patch:
+      operationId: author_partial_update
+      description: |-
+        Update Author (Only Users with Admin Range).
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the author to get.
+
+
+        ### Request Body :
+
+        - `first_name` (str)(option): Author First name.
+
+        - `last_name` (str)(option): Author Last name.
+
+        - `biography` (str)(option): Author Biography.
+
+        - `picture` (str)(option): Path where is store the Author picture .
+
+        - `nationality` (str)(optional): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+        - `birth_date` (str)(option): Date of birth in format YYYY-mm-dd.
+
+        - `death_date` (str)(optional): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just leave it hanging in the void of null 😅.
+
+
+
+        ### Response(Success):
+
+        - `202 Create` :
+
+            - `detail` (str): Author successfully update.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        If the user is not authenticated.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Author.
+        required: true
+      tags:
+      - author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAuthorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAuthorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateAuthorRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    delete:
+      operationId: author_destroy
+      description: |-
+        Delete Author (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the author to get.
+
+
+        ### Response(Success):
+
+        - `204 Create` : Author be deleted.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        If the user is not authenticated.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Author.
+        required: true
+      tags:
+      - author
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /book/:
+    get:
+      operationId: book_list
+      description: |-
+        List Books.
+
+
+        ### URL Parameters :
+
+        - `search` (str): To find books that contains in his title the content.
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of books to get epr page.
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `count` (int): TOTAL Amount of Books.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Books
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `404 NOT FOUND`:
+        Book/s Not found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filtering by title content.
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListBookList'
+          description: ''
+    post:
+      operationId: book_create
+      description: |-
+        Create Book (Only Users with Admin Range).
+
+
+        ### Request Body :
+
+        - `title` (str): Book Title.
+
+        - `language` (str): Language in which the book is written.
+
+        - `edition` (int): Number of edition.
+
+        - `amount_pages` (int): Number of pages the book has.
+
+        - `cover` (file): Binary forCover of the book.
+
+        - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+        - `genre` (str): Genre slug to which it belongs.
+
+        - `publisher` (int)(optional): Publisher id to which it belongs, if unknown put null.
+
+        - `author` (int)(optional): Author id to which it belongs, if unknown put null.
+
+
+        ### Response(Success):
+
+        - `201 CREATED` :
+
+            - `detail` (str): Book created successfully.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /book/{slug}/:
+    get:
+      operationId: book_retrieve
+      description: |-
+        Retrieve Book.
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the book to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `title` (str): Book Title.
+
+            - `language` (str): Language in which the book is written.
+
+            - `edition` (int): Number of edition.
+
+            - `amount_pages` (int): Number of pages the book has.
+
+            - `cover` (file): Binary forCover of the book.
+
+            - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+            - `slug` (str): Slug of the book, that we use as identifier.
+
+            - `genre` (object): Genre.
+
+                - `name` (str): Genre name.
+
+                - `description` (str): Genre Description.
+
+                - `slug` (str): Genre slug.
+
+            - `publisher` (object): Publisher, if not exists going to be null.
+
+                - `name` (str): Publisher name.
+
+                - `country` (str): Publisher Description.
+
+                - `id` (int): Publisher Identifier.
+
+            - `author` (object): Author, if not exists going to be null.
+
+                - `id` (int): Author Identifier.
+
+                - `name` (str): Author First name + Last name.
+
+                - `biography` (str): Author Biography.
+
+                - `picture` (str): Path where is store the Author picture .
+
+                - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `404 NOT FOUND`:
+        Book Not found.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBook'
+          description: ''
+    put:
+      operationId: book_update
+      description: '### Method not allowed.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      responses:
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    patch:
+      operationId: book_partial_update
+      description: |-
+        Update Book (Only Users with Admin Range).
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the Book to get.
+
+
+        ### Request Body :
+
+        - `title` (str)(optional): Book Title.
+
+        - `language` (str)(optional): Language in which the book is written.
+
+        - `edition` (int)(optional): Number of edition.
+
+        - `amount_pages` (int)(optional): Number of pages the book has.
+
+        - `cover` (file)(optional): Binary forCover of the book.
+
+        - `publication_date` (str)(optional): Date when it was published in YYYY-mm-dd format.
+
+        - `genre` (str)(optional): Genre slug to which it belongs.
+
+        - `publisher` (int)(optional): Publisher id to which it belongs, if unknown put null.
+
+        - `author` (int)(optional): Author id to which it belongs, if unknown put null.
+
+
+        ### Response(Success):
+
+        - `202 ACCEPTED` :
+
+            - `detail` (str): Book updated successfully.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Book not found.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateBookRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateBookRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateBookRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBook'
+          description: ''
+    delete:
+      operationId: book_destroy
+      description: |-
+        Delete Book (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the Book to get.
+
+
+        ### Response(Success):
+
+        - `204 Create` : Book be deleted.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Book not found.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /book/author/{id}/:
+    get:
+      operationId: book_author_retrieve
+      description: |-
+        List Books by Author.
+
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the Author to get his Books.
+
+
+        ### URL Parameters :
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of books to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `count` (int): TOTAL Amount of Books.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Books
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `404 NOT FOUND`:
+        Book/s of this author Not found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBook'
+          description: ''
+  /book/genre/{slug}/:
+    get:
+      operationId: book_genre_retrieve
+      description: |-
+        List Books by Genre.
+
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the Genre to get his Books.
+
+
+        ### URL Parameters :
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of book to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `count` (int): TOTAL Amount of Books.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Books
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `404 NOT FOUND`:
+        Book/s of this author Not found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBook'
+          description: ''
+  /book/publisher/{id}/:
+    get:
+      operationId: book_publisher_retrieve
+      description: |-
+        List Books by Publisher.
+
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the Publisher to get his Books.
+
+
+        ### URL Parameters :
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of books to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `count` (int): TOTAL Amount of Books.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Books
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `404 NOT FOUND`:
+        Book/s of this publisher Not found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      tags:
+      - book
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBook'
+          description: ''
+  /check-password-match/:
+    post:
+      operationId: check_password_match_create
+      description: |-
+        Checking if passwords match.
+
+
+        ### Request:
+
+        - `password` (str): The first password.
+
+        - `password2` (str): The second password for comparison.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Passwords match.
+
+            - `match` (bool): True if the passwords match, False otherwise.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        If the request data is invalid.
+
+            - `password`: This field is required.
+
+            - `password2`: This field is required.
+      tags:
+      - check-password-match
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordCheckMatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordCheckMatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordCheckMatchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordCheckMatch'
+          description: ''
+  /credits/:
+    get:
+      operationId: credits_list
+      description: |-
+        List the credits that have a user (Only Users that are Authenticate).
+
+
+        ### Response(Success):
+
+        - `200 OK` : Credits.
+
+            - `user` (str): Username of the user that is authenticate.
+
+            - `amount` (int): Number of credits that have that user.
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `500 Internal Server Error`:
+        Detail of what fail.
+      tags:
+      - credits
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditRetrieve'
+          description: ''
+  /credits/subtract/:
+    patch:
+      operationId: credits_subtract_partial_update
+      description: |-
+        Subtract credits (Only Users that are Authenticate).
+
+
+        ### Request Body :
+
+        - `subtract` (int): Positive integer to subtract from the amount of credits.
+
+
+
+        ### Response(Success):
+
+        - `202 ACCEPTED` : Credits.
+
+            - `detail` (str): Successfully subtract of credits..
+
+            - `credits` (object): Credits.
+
+                - `user` (str): Username of the user that is authenticate.
+
+                - `amount` (int): Number of credits that have that user.
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - credits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditPatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditPatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreditPatchRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditRetrieve'
+          description: ''
+  /fav/:
+    get:
+      operationId: fav_list
+      description: |-
+        List of user's favorite books (Only Users that are Authenticate).
+
+
+        ### Query Parameters :
+
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of favorites books to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of Books objects.
+
+            - `count` (int): Amount of TOTAL objects.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str):  if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Books
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not Found`:
+        Favorite/s not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      tags:
+      - fav
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListFavoriteList'
+          description: ''
+    post:
+      operationId: fav_create
+      description: |-
+        Create Favorite (Only Users that are Authenticate).
+
+
+        ### Request Body :
+
+        - `slug` (str): Slug of the book to make it favorite.
+
+
+        ### Response(Success):
+
+        - `201 Create` : Favorite create.
+
+            - `detail` (str): Book add to favorite successfully..
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - fav
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /fav/{book}/:
+    delete:
+      operationId: fav_destroy
+      description: |-
+        Delete Favorite (Only Users that are Authenticate).
+
+
+        ### Path Parameter:
+
+        - `slug` (str): Slug of the book to remove from favorites.
+
+
+        ### Response(Success):
+
+        - `204 NO CONTENT` : Favorite deleted.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Book not is in the favorite of this user.
+      parameters:
+      - in: path
+        name: book
+        schema:
+          type: string
+        required: true
+      tags:
+      - fav
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /genre/:
+    get:
+      operationId: genre_list
+      description: |-
+        List Genres.
+
+
+        ### URL Parameters :
+
+        - `search` (str): To find Genres that contains in his body the "first_name/last_name".
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of Genres to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of Genres objects.
+
+            - `count` (int): Amount of TOTAL objects.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (array): List of objects.
+
+                - `name` (str): Genre name.
+
+                - `description` (str): Genre Description.
+
+                - `slug` (str): Genre slug.
+
+        ### Response(Failure):
+
+        - `404 Not Found`:
+        Genre/s not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filtering by name/description content.
+      tags:
+      - genre
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBaseGenreList'
+          description: ''
+    post:
+      operationId: genre_create
+      description: |-
+        Create Genre (Only Users with Admin Range).
+
+
+        ### Request Body :
+
+        - `name` (str): Genre name.
+
+        - `description` (str): Genre description.
+
+
+        ### Response(Success):
+
+        - `201 Create` : List of Genre objects.
+
+            - `detail` (str): Genre successfully created.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - genre
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /genre/{slug}/:
+    get:
+      operationId: genre_retrieve
+      description: |-
+        Retrieve Genre.
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the genre to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : Genre object.
+
+            - `name` (str): Genre name.
+
+            - `description` (str): Genre Description.
+
+
+        ### Response(Failure):
+
+        - `404 Not Found`:
+        Genre/s not be found.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genre
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseBook'
+          description: ''
+    put:
+      operationId: genre_update
+      description: Method not allowed.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genre
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenericGenreRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericGenre'
+          description: ''
+    patch:
+      operationId: genre_partial_update
+      description: |-
+        Update Genre (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The id of the slug of genre to update.
+
+
+        ### Request Body :
+
+        - `name` (str): Genre name.
+
+        - `description` (str): Genre description.
+
+
+        ### Response(Success):
+
+        - `202 ACCEPTED` :
+
+            - `detail` (str): Genre updated successfully.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Genre not found.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genre
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericGenreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericGenreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericGenreRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    delete:
+      operationId: genre_destroy
+      description: |-
+        Delete Genre (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `slug` (str):
+            The slug of the Genre to delete.
+
+
+        ### Response(Success):
+
+        - `204 Create` : Genre was deleted.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        If the user is not authenticated.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - genre
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /notification/:
+    get:
+      operationId: notification_list
+      description: |-
+        List notifications that have a user (Only Users that are Authenticate).
+
+
+        ### Query Parameters:
+
+        - `not_read` (boolean)(optional): If true, only fetch unread notifications.
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of notifications to get per page.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`: List of notifications.
+
+            - `id` (int): Notification ID.
+
+            - `title` (str): Title of the notification.
+
+            - `message` (str): Body of the notification.
+
+            - `is_read` (boolean): Boolean that show if was read, True, or not False.
+
+            - `created_at` (str): Date time when was sent.
+
+            - `type` (str): Model name which is related the notification.
+
+            - `variable(equal to the value of type)` (object): Entire object which is related the notification.
+
+                - `field_1` (int): Field of object.
+
+                - `field_2` (str): Another Field of object.
+
+                - `etcetera`
+
+
+
+        ### Response (Failure):
+
+        - `404 Not Found`:
+        Notifications not found.
+
+        - `500 Internal Server Error`:
+        If an unexpected error occurs.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - notification
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /notification/{id}/:
+    get:
+      operationId: notification_retrieve
+      description: |-
+        Retrieve a specific notification (Only Users that are Authenticate).
+
+
+        ### Response (Success):
+
+        - `200 OK`: Notification.
+
+            - `id` (int): Notification ID.
+
+            - `title` (str): Title of the notification.
+
+            - `message` (str): Body of the notification.
+
+            - `is_read` (boolean): Boolean that show if was read, True, or not False.
+
+            - `created_at` (str): Date time when was sent.
+
+            - `type` (str): Model name which is related the notification.
+
+            - `variable(equal to the value of type)` (object): Entire object which is related the notification.
+
+                - `field_1` (int): Field of object.
+
+                - `field_2` (str): Another Field of object.
+
+                - `etcetera`
+
+
+
+        ### Response (Failure):
+
+        - `404 Not Found`:
+        Notifications not found.
+
+        - `500 Internal Server Error`:
+        If an unexpected error occurs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notification
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /password-change/:
+    post:
+      operationId: password_change_create
+      description: |-
+        Change the password for the authenticated user.
+
+
+        Finalize the password change process by providing the old and new passwords.
+
+        The request must include the old password, new password, and confirmation of the new password.
+
+
+
+        ### Request:
+
+        - `old_password` (str): The current password of the user.
+
+        - `new_password` (str): The new password for the user.
+
+        - `confirm_new_password` (str): Confirmation of the new password.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Password changed successfully.
+
+            - `detail` (str): Password changed successfully.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        If the request data is invalid.
+
+        - `401 Unauthorized`:
+        If the provided current password is incorrect.
+      tags:
+      - password-change
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /password-recovery/:
+    post:
+      operationId: password_recovery_create
+      description: |-
+        Request a password reset link.
+
+
+        Initiate the process to reset the user's password by sending a reset link to their email address.
+
+        The request must include the user's email.
+
+
+
+        ### Request:
+
+        - `email` (str): The email address associated with the user's account.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Password reset link sent successfully.
+
+            - `detail` (str): Password reset link sent to the provided email address.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        If the request data is invalid.
+
+        - `404 Not Found`:
+        If no user is associated with the provided email.
+      tags:
+      - password-recovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordRecoveryRequest'
+          description: ''
+  /password-recovery/{uidb64}/{token}/:
+    post:
+      operationId: password_recovery_create_with_uid_and_token
+      description: |-
+        Confirm a password recovery request.
+
+
+        Finalize the password recovery process by confirming the reset link.
+
+        The request must include the user's UIDB64 and the token received in the reset link.
+
+
+
+        ### Path Parameters:
+
+        - `uidb64` (str): User ID encoded in base64.
+
+        - `token` (str): Token received in the password recovery reset link.
+
+
+
+        ### Request:
+
+            - `new_password` (str): The new password for the user.
+
+            - `confirm_new_password` (str): Confirmation of the new password.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Password reset successfully confirmed.
+
+            - `detail` (str): Password reset successfully.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        If the request data is invalid.
+
+        - `400 Bad Request`:
+        If the reset link is invalid.
+
+        - `401 Unauthorized`:
+        If the reset link has already been used or has expired.
+
+        - `404 Not Found`:
+        If no user is associated with the provided UIDB64.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uidb64
+        schema:
+          type: string
+        required: true
+      tags:
+      - password-recovery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordRecoveryConfirmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordRecoveryRequest'
+          description: ''
+  /penalty/:
+    get:
+      operationId: penalty_list
+      description: |-
+        List the Penalties that have a user (Only Users that are Authenticate).
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of Penalties.
+
+            - `id` (int): Penalty ID.
+
+            - `user` (str): Username of the user receives the Penalty (== authenticate user).
+
+            - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the Penalty.
+
+            - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the Penalty.
+
+            - `complete` (boolean): If is complete(end_date < today)is True, otherwise is False.
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Penalties not found.
+      tags:
+      - penalty
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PenaltyList'
+          description: ''
+  /penalty/{id}/:
+    get:
+      operationId: penalty_retrieve
+      description: |-
+        Retrieve Penalty that have a user (Only Users that are Authenticate).
+
+
+
+        ### Path Parameter:
+
+        - `id` (int): Penalty ID that want to get.
+
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `penalty` (object): Penalty .
+
+                - `id` (int): Penalty ID.
+
+                - `user` (str): Username of the user receives the Penalty (== authenticate user).
+
+                - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the Penalty.
+
+                - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the Penalty.
+
+                - `complete` (boolean): If is complete(end_date < today)is True, otherwise is False.
+
+            - `strikes` (objects): List of strikes.
+
+                - `reason` (str): Explanation why received the strike.
+
+                - `reservation` (object): Reservation object.
+
+                    - `id` (int): Reservation ID.
+
+                    - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+                    - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+                    - `initial_price` (decimal): Price for the period of reservation.
+
+                    - `status` (str): Status of the book reservation.
+
+                        - canceled_user, canceled_system, confirmed, available, retired, expired, waiting_payment, completed.
+                    - `returned_date` (str): Date, format YYYY-mm-dd, when the reserved book was returned, if it has not been returned yet, it will return null.
+
+                    - `penalty_price` (decimal): Penalty price. If book not was returned on the period that was reservation, otherwise be 0.0.
+
+                    - `final_price` (decimal): Price for the period of reservation, null if not end or not was returned.
+
+                    - `notes` (str): Some note or helpful text to add the reservation.
+
+                    - `created_at` (str): Date time, format YYYY-mm-ddTHH:MM:SS.Z, when was created the reservation.
+
+                    - `book` (object): Book.
+
+                        - `title` (str): Book Title.
+
+                        - `language` (str): Language in which the book is written.
+
+                        - `edition` (int): Number of edition.
+
+                        - `amount_pages` (int): Number of pages the book has.
+
+                        - `cover` (file): Binary forCover of the book.
+
+                        - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                        - `slug` (str): Slug of the book, that we use as identifier.
+
+                        - `genre` (object): Genre.
+
+                            - `name` (str): Genre name.
+
+                            - `description` (str): Genre Description.
+
+                            - `slug` (str): Genre slug.
+
+                        - `publisher` (object): Publisher, if not exists going to be null.
+
+                            - `name` (str): Publisher name.
+
+                            - `country` (str): Publisher Description.
+
+                            - `id` (int): Publisher Identifier.
+
+                        - `author` (object): Author, if not exists going to be null.
+
+                            - `id` (int): Author Identifier.
+
+                            - `name` (str): Author First name + Last name.
+
+                            - `biography` (str): Author Biography.
+
+                            - `picture` (str): Path where is store the Author picture .
+
+                            - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                            - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                            - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Penalties not found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this penalty.
+        required: true
+      tags:
+      - penalty
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PenaltyRetrieve'
+          description: ''
+  /penalty/amount/:
+    get:
+      operationId: penalty_amount_retrieve
+      description: |-
+        Get amount of Penalties that received the authenticate user (Only Users that are Authenticate).
+
+
+        ### Response(Success):
+
+        - `200 OK` : .
+
+            - `amount_penalties` (int): Number of Penalties the user has.
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+            If the user is not authenticated.
+      tags:
+      - penalty
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /publisher/:
+    get:
+      operationId: publisher_list
+      description: |-
+        List Publishers.
+
+
+        ### URL Parameters :
+
+        - `search` (str): To find Publishers that contains in his name.
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of Publishers to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of Publishers objects.
+
+            - `count` (int): Amount of TOTAL objects.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str): if exists, URL of the previous objects, otherwise null.
+
+            - `results` (array): List of objects.
+
+                - `name` (str): Publisher name.
+
+                - `country` (str): Publisher Description.
+
+                - `id` (int): Publisher Identifier.
+
+        ### Response(Failure):
+
+        - `404 Not Found`:
+        Publisher/s not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filtering by name/description content.
+      tags:
+      - publisher
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBasePublisherList'
+          description: ''
+    post:
+      operationId: publisher_create
+      description: |-
+        Create Publisher (Only Users with Admin Range).
+
+
+        ### Request Body :
+
+        - `name` (str): Publisher name.
+
+        - `country` (str): ISO 3166, country where is located the Publisher .
+
+
+        ### Response(Success):
+
+        - `201 CREATED` :
+
+            - `detail` (str): Publisher created successfully.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+      tags:
+      - publisher
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericPublisherRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GenericPublisherRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenericPublisherRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /publisher/{id}/:
+    get:
+      operationId: publisher_retrieve
+      description: |-
+        Retrieve Publisher.
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the Publisher to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : Publisher object.
+
+            - `name` (str): Publisher name.
+
+            - `country` (str)(optional): ISO 3166, country where is located the Publisher .
+
+            - `id` (int): Publisher Identifier.
+
+
+        ### Response(Failure):
+
+        - `404 Not Found`:
+        Publisher not be found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this publisher.
+        required: true
+      tags:
+      - publisher
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasePublisher'
+          description: ''
+    put:
+      operationId: publisher_update
+      description: Method not allowed.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this publisher.
+        required: true
+      tags:
+      - publisher
+      security:
+      - jwtAuth: []
+      responses:
+        '405':
+          description: No response body
+    patch:
+      operationId: publisher_partial_update
+      description: |-
+        Update Publisher (Only Users with Admin Range).
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the Publisher to get.
+
+
+        ### Request Body :
+
+        - `name` (str)(optional): Publisher name.
+
+        - `country` (str)(optional): ISO 3166, country where is located the Publisher .
+
+
+        ### Response(Success):
+
+        - `202 ACCEPTED` :
+
+            - `detail` (str): Publisher updated successfully.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Publisher not found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this publisher.
+        required: true
+      tags:
+      - publisher
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericPublisherRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericPublisherRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGenericPublisherRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    delete:
+      operationId: publisher_destroy
+      description: |-
+        Delete Publisher (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `id` (int):
+            The id of the Publisher to get.
+
+
+        ### Response(Success):
+
+        - `204 Create` : Publisher be deleted.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        If the user is not authenticated.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this publisher.
+        required: true
+      tags:
+      - publisher
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /reservation/:
+    get:
+      operationId: reservation_list
+      description: |-
+        List of user's reservations of books (Only Users that are Authenticate).
+
+
+        ### Query Parameters :
+
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of reservations to get per page.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of reservations objects.
+
+            - `count` (int): Amount of TOTAL objects.
+
+            - `next` (str): if exists, URL of the next objects, otherwise null.
+
+            - `prev` (str):  if exists, URL of the previous objects, otherwise null.
+
+            - `results` (list): List of Reservations
+
+                - `id` (int): Reservation ID.
+
+                - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+                - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+                - `initial_price` (decimal): Price for the period of reservation.
+
+                - `status` (str): Status of the book reservation.
+
+                    - canceled_user, canceled_system, confirmed, available, retired, expired, waiting_payment, completed.
+                - `returned_date` (str): Date, format YYYY-mm-dd, when the reserved book was returned, if it has not been returned yet, it will return null.
+
+                - `penalty_price` (decimal): Penalty price. If book not was returned on the period that was reservation, otherwise be 0.0.
+
+                - `final_price` (decimal): Price for the period of reservation, null if not end or not was returned.
+
+                - `notes` (str): Some note or helpful text to add the reservation.
+
+                - `created_at` (str): Date time, format YYYY-mm-ddTHH:MM:SS.Z, when was created the reservation.
+
+                - `book` (object): Book.
+
+                    - `title` (str): Book Title.
+
+                    - `language` (str): Language in which the book is written.
+
+                    - `edition` (int): Number of edition.
+
+                    - `amount_pages` (int): Number of pages the book has.
+
+                    - `cover` (file): Binary forCover of the book.
+
+                    - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                    - `slug` (str): Slug of the book, that we use as identifier.
+
+                    - `genre` (object): Genre.
+
+                        - `name` (str): Genre name.
+
+                        - `description` (str): Genre Description.
+
+                        - `slug` (str): Genre slug.
+
+                    - `publisher` (object): Publisher, if not exists going to be null.
+
+                        - `name` (str): Publisher name.
+
+                        - `country` (str): Publisher Description.
+
+                        - `id` (int): Publisher Identifier.
+
+                    - `author` (object): Author, if not exists going to be null.
+
+                        - `id` (int): Author Identifier.
+
+                        - `name` (str): Author First name + Last name.
+
+                        - `biography` (str): Author Biography.
+
+                        - `picture` (str): Path where is store the Author picture .
+
+                        - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                        - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                        - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not Found`:
+        Reservation/s not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page (max 30).
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListReservationList'
+          description: ''
+    post:
+      operationId: reservation_create
+      description: |-
+        Create Reservation of a book  (Only Users that are Authenticate).
+
+
+        ### Request Body :
+
+        - `book` (str): Slug of the book to make the reservation.
+
+        - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+        - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+        - `notes` (str): Some note or helpful text to add the reservation.
+
+        ### Response(Success):
+
+        - `201 Create` : Reservation created.
+
+            - `detail` (str): Book reservation was made successfully..
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `403 For bidden`:
+        The user has a penalty in progress..
+      tags:
+      - reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /reservation/{id}/:
+    get:
+      operationId: reservation_retrieve
+      description: |-
+        Retrieve reservations of books (Only Users that are Authenticate).
+
+
+        ### Path Parameter:
+
+        - `id` (int): Reservation ID of the reservation that want to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of reservations objects.
+
+            - `id` (int): Reservation ID.
+
+            - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+            - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+            - `initial_price` (decimal): Price for the period of reservation.
+
+            - `status` (str): Status of the book reservation.
+
+                - canceled_user, canceled_system, confirmed, available, retired, expired, waiting_payment, completed.
+            - `returned_date` (str): Date, format YYYY-mm-dd, when the reserved book was returned, if it has not been returned yet, it will return null.
+
+            - `penalty_price` (decimal): Penalty price. If book not was returned on the period that was reservation, otherwise be 0.0.
+
+            - `final_price` (decimal): Price for the period of reservation, null if not end or not was returned.
+
+            - `notes` (str): Some note or helpful text to add the reservation.
+
+            - `created_at` (str): Date time, format YYYY-mm-ddTHH:MM:SS.Z, when was created the reservation.
+
+            - `book` (object): Book.
+
+                - `title` (str): Book Title.
+
+                - `language` (str): Language in which the book is written.
+
+                - `edition` (int): Number of edition.
+
+                - `amount_pages` (int): Number of pages the book has.
+
+                - `cover` (file): Binary forCover of the book.
+
+                - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                - `slug` (str): Slug of the book, that we use as identifier.
+
+                - `genre` (object): Genre.
+
+                    - `name` (str): Genre name.
+
+                    - `description` (str): Genre Description.
+
+                    - `slug` (str): Genre slug.
+
+                - `publisher` (object): Publisher, if not exists going to be null.
+
+                    - `name` (str): Publisher name.
+
+                    - `country` (str): Publisher Description.
+
+                    - `id` (int): Publisher Identifier.
+
+                - `author` (object): Author, if not exists going to be null.
+
+                    - `id` (int): Author Identifier.
+
+                    - `name` (str): Author First name + Last name.
+
+                    - `biography` (str): Author Biography.
+
+                    - `picture` (str): Path where is store the Author picture .
+
+                    - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                    - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                    - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAS REQUEST`:
+        Invalid id for a reservation.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not Found`:
+        Reservation not be found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListReservation'
+          description: ''
+    put:
+      operationId: reservation_update
+      description: '### Method not allowed, use PATCH.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      responses:
+        '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+    patch:
+      operationId: reservation_partial_update
+      description: |-
+        Update Reservation (Only Users with Admin Range).
+
+
+        ### Path Parameter:
+
+        - `id` (int): Reservation ID of the reservation that want to update.
+
+
+        ### Request Body :
+
+        Must have one of the two options.
+        - `retired` (bool)(optional): Mark as retired when the use pick up the book that corresponds with the reservation.
+
+        - `returned_date` (str)(optional): Date, format YYYY-mm-dd, when be returned the book that corresponds to the reservation.
+
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of reservations objects.
+
+            - `detail` (str): Updated successfully.
+
+            - `result` (object): Reservation
+
+                - `id` (int): Reservation ID.
+
+                - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+                - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+                - `initial_price` (decimal): Price for the period of reservation.
+
+                - `status` (str): Status of the book reservation.
+
+                    - canceled_user, canceled_system, confirmed, available, retired, expired, waiting_payment, completed.
+                - `returned_date` (str): Date, format YYYY-mm-dd, when the reserved book was returned, if it has not been returned yet, it will return null.
+
+                - `penalty_price` (decimal): Penalty price. If book not was returned on the period that was reservation, otherwise be 0.0.
+
+                - `final_price` (decimal): Price for the period of reservation, null if not end or not was returned.
+
+                - `notes` (str): Some note or helpful text to add the reservation.
+
+                - `created_at` (str): Date time, format YYYY-mm-ddTHH:MM:SS.Z, when was created the reservation.
+
+                - `book` (object): Book.
+
+                    - `title` (str): Book Title.
+
+                    - `language` (str): Language in which the book is written.
+
+                    - `edition` (int): Number of edition.
+
+                    - `amount_pages` (int): Number of pages the book has.
+
+                    - `cover` (file): Binary forCover of the book.
+
+                    - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                    - `slug` (str): Slug of the book, that we use as identifier.
+
+                    - `genre` (object): Genre.
+
+                        - `name` (str): Genre name.
+
+                        - `description` (str): Genre Description.
+
+                        - `slug` (str): Genre slug.
+
+                    - `publisher` (object): Publisher, if not exists going to be null.
+
+                        - `name` (str): Publisher name.
+
+                        - `country` (str): Publisher Description.
+
+                        - `id` (int): Publisher Identifier.
+
+                    - `author` (object): Author, if not exists going to be null.
+
+                        - `id` (int): Author Identifier.
+
+                        - `name` (str): Author First name + Last name.
+
+                        - `biography` (str): Author Biography.
+
+                        - `picture` (str): Path where is store the Author picture .
+
+                        - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                        - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                        - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not Found`:
+        Reservation/s not be found.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPatchReservationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPatchReservationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPatchReservationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListReservation'
+          description: ''
+    delete:
+      operationId: reservation_destroy
+      description: |-
+        "Delete" Reservation (Only Users that are Authenticate).
+
+        Change status to "canceled_user" ...
+
+        ### Path Parameter:
+
+        - `id` (int): Reservation ID of the reservation that want to as canceled.
+
+
+        ### Response(Success):
+
+        - `204 NO CONTENT` : Reservation canceled.
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details.
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `403 For bidden`:
+        Cannot cancel a reservation that has already started.
+
+        - `404 Not found`:
+        Book not is in the favorite of this user.
+
+        - `500 Internal Server Error`:
+        Something fail changing the status.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this reservation.
+        required: true
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /reservation/check/availability/:
+    get:
+      operationId: reservation_check_availability_retrieve
+      description: |-
+        Check Availability of a book in a specific period of time (ANY)
+
+        ### Path Parameter:
+
+        - `book` (str): Slug of the book.
+
+        - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the period.
+
+        - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the period.
+
+
+        ### Response(Success):
+
+        - `200 OK` : .
+
+            - `is_available` (bool): Boolean value representing if is going to be available or not.
+
+
+        ### Response(Failure):
+
+        - `400 BAD REQUEST`:
+        Invalid input data. Check the response for details
+      parameters:
+      - in: query
+        name: book
+        schema:
+          type: string
+        description: Slug of the book.
+        required: true
+      - in: query
+        name: end_date
+        schema:
+          type: string
+        description: Date, format YYYY-mm-dd, that is going to end the reservation.
+        required: true
+      - in: query
+        name: start_date
+        schema:
+          type: string
+        description: Date, format YYYY-mm-dd, that is going to start the reservation.
+        required: true
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /reservation/unavailable/periods/:
+    get:
+      operationId: reservation_unavailable_periods_retrieve
+      description: |-
+        List Unavailability periods to reserve of a book (ANY).
+
+        ### Path Parameter:
+
+        - `book` (str): Slug of the book.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of periods.
+
+            - `start_date` (string): Date, format YYYY-mm-dd, when start a reservation.
+
+            - `end_date` (string): Date, format YYYY-mm-dd, when end a reservation.
+
+        ### Response(Failure):
+
+        - `400 Bad REQUEST`:
+        Invalid input data. Check the response for details
+
+        - `404 Not found`:
+        Book with that slug not found.
+      parameters:
+      - in: query
+        name: book
+        schema:
+          type: string
+        description: Slug of the book.
+        required: true
+      tags:
+      - reservation
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnavailableReservationPeriods'
+          description: ''
+  /strikes/:
+    get:
+      operationId: strikes_list
+      description: |-
+        List Strikes that received the authenticate user (Only Users that are Authenticate).
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of Strikes.
+
+            - `reason` (str): Explanation why received the strike.
+
+            - `reservation` (object): Reservation object.
+
+                - `id` (int): Reservation ID.
+
+                - `start_date` (str): Date, format YYYY-mm-dd, that is going to start the reservation.
+
+                - `end_date` (str): Date, format YYYY-mm-dd, that is going to end the reservation.
+
+                - `initial_price` (decimal): Price for the period of reservation.
+
+                - `status` (str): Status of the book reservation.
+
+                    - canceled_user, canceled_system, confirmed, available, retired, expired, waiting_payment, completed.
+                - `returned_date` (str): Date, format YYYY-mm-dd, when the reserved book was returned, if it has not been returned yet, it will return null.
+
+                - `penalty_price` (decimal): Penalty price. If book not was returned on the period that was reservation, otherwise be 0.0.
+
+                - `final_price` (decimal): Price for the period of reservation, null if not end or not was returned.
+
+                - `notes` (str): Some note or helpful text to add the reservation.
+
+                - `created_at` (str): Date time, format YYYY-mm-ddTHH:MM:SS.Z, when was created the reservation.
+
+                - `book` (object): Book.
+
+                    - `title` (str): Book Title.
+
+                    - `language` (str): Language in which the book is written.
+
+                    - `edition` (int): Number of edition.
+
+                    - `amount_pages` (int): Number of pages the book has.
+
+                    - `cover` (file): Binary forCover of the book.
+
+                    - `publication_date` (str): Date when it was published in YYYY-mm-dd format.
+
+                    - `slug` (str): Slug of the book, that we use as identifier.
+
+                    - `genre` (object): Genre.
+
+                        - `name` (str): Genre name.
+
+                        - `description` (str): Genre Description.
+
+                        - `slug` (str): Genre slug.
+
+                    - `publisher` (object): Publisher, if not exists going to be null.
+
+                        - `name` (str): Publisher name.
+
+                        - `country` (str): Publisher Description.
+
+                        - `id` (int): Publisher Identifier.
+
+                    - `author` (object): Author, if not exists going to be null.
+
+                        - `id` (int): Author Identifier.
+
+                        - `name` (str): Author First name + Last name.
+
+                        - `biography` (str): Author Biography.
+
+                        - `picture` (str): Path where is store the Author picture .
+
+                        - `nationality` (str): ISO 3166-1 (alpha-2 code) of the Nationality.
+
+                        - `birth_date` (str): Date of birth in format YYYY-mm-dd.
+
+                        - `death_date` (str)(null): Date of death in the YYYY-mm-dd format. Otherwise, if is alive just be null.
+
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not found`:
+        Authenticate user not receives Strikes.
+      tags:
+      - strikes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StrikeList'
+          description: ''
+  /strikes/amount/:
+    get:
+      operationId: strikes_amount_retrieve
+      description: |-
+        Get amount of Strikes that received the authenticate user (Only Users that are Authenticate).
+
+
+        ### Response(Success):
+
+        - `200 OK` :
+
+            - `amount_strikes` (int): Number of strikes the user has.
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+            If the user is not authenticated.
+      tags:
+      - strikes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /users/:
+    get:
+      operationId: users_list
+      description: |-
+        List users.
+
+
+        ### URL Parameters :
+
+        - `search` (str): To find posts that contains in his body the "value".
+
+        - `page` (int): Page to get.
+
+        - `page_size` (int): Amount of posts to get.
+
+
+        ### Response(Success):
+
+        - `200 OK` : List of user objects.
+
+            - `username` (str): User handle.
+
+            - `username` (str): Username.
+
+            - `profile_img` (str): URL to the user's profile image.
+
+            - `biography` (str): Profile Biography.
+
+            - `follower_amount` (int): Number of followers for the user.
+
+            - `following_amount` (int): Number of users the user is following.
+
+
+
+        ### Response(Failure):
+
+        - `401 Unauthorized`:
+        If the user is not authenticated.
+
+        - `404 Not Found`:
+        Users not be found.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Page number.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Amount of results per page.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filtering by username and username.
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedListSimpleUserList'
+          description: ''
+    post:
+      operationId: users_create
+      description: |-
+        Create a new user.
+
+
+        Creation of a new user account. Upon successful creation,
+        an activation email is sent to the user's email address to complete the registration process.
+
+
+
+        ## Fields (in the Request Body):
+
+        - ### Required:
+            - `username` (str): Username for the user.
+
+            - `email` (str): Email address for the user.
+
+            - `password` (str): User's password.
+
+            - `password2` (str): Confirmation of the user's password.
+
+            - `first_name` (str): User's first name.
+
+            - `last_name` (str): User's last name.
+
+
+        - ### Optionals:
+
+            - `profile_img` (file): Profile image for the user.
+
+            - `birth_date` (str): User's date of birth.
+
+
+
+        ### Response (Success):
+
+        - 201 Created: User created successfully. An activation email will be sent to the user's email address.
+
+
+
+        ### Response (Failure):
+
+        - 400 Bad Request: Invalid input data. Check the response for details.
+
+        - 409 Conflict: Unable to send the activation email.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+          description: ''
+  /users/{username}/:
+    get:
+      operationId: users_retrieve
+      description: |-
+        Retrieve user profile.
+
+
+        Retrieval of a user's profile information find it from the username. The user must be authenticated to access this endpoint.
+
+
+        ### Path Parameter:
+
+        - `username` (str):
+        The handle of the user account to get the profile.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        User profile retrieved successfully.
+
+            - `username` (str): User's username.
+
+            - `username` (str): User's unique handle.
+
+            - `email` (str): User's email address.
+
+            - `first_name` (str): User's first name.
+
+            - `last_name` (str): User's last name.
+
+            - `birth_date` (str): User's date of birth.
+
+            - `biography` (str): User's biography.
+
+            - `profile_img` (str): URL to the user's profile image.
+
+            - `header_photo` (str): URL to the user's header photo.
+
+            - `website` (str): User's website URL.
+
+            - `location` (str): User's location.
+
+            - `create_at` (str): Formatted creation date (e.g., "January of 2022").
+
+            - `follower_amount` (int): Number of followers for the user.
+
+            - `following_amount` (int): Number of users the user is following.
+
+
+
+        ### Response (Failure):
+
+        - `401 Unauthorized`:
+        User not authenticated.
+
+        -`403 FORBIDDEN`:
+        The authenticated user not have permission. access denied.
+
+        - `404 Not Found`:
+        User with the username parse in the query parameter not exists or is inactive.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProfileUser'
+          description: ''
+    put:
+      operationId: users_update
+      description: |-
+        Update user information.
+
+
+        Update of user information. To update the information,
+        the user must be authenticated and can only update their own account.
+
+
+        ### Path Parameter:
+
+        - `username` (str): The handle of the user account to be updated.
+
+
+
+        ### Request Body (Partial Update):
+
+        - The request body should contain the fields to be updated. Partial updates are allowed.
+
+            - `username` (str): Username for the user.
+
+            - `email` (str): Email address for the user.
+
+            - `first_name` (str): User's first name.
+
+            - `last_name` (str): User's last name.
+
+            - `profile_img` (file): Profile image for the user.
+
+            - `birth_date` (str): User's date of birth.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        User information updated successfully.
+
+            - `message` (str): Confirmation message.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        Invalid input data. Check the response for details.
+
+        - `403 Forbidden`:
+        The user is not allowed to update the account.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUser'
+          description: ''
+    patch:
+      operationId: users_partial_update
+      description: |-
+        Update user information.
+
+
+        Update of user information. To update the information,
+        the user must be authenticated and can only update their own account.
+
+
+        ### Path Parameter:
+
+        - `username` (str): The handle of the user account to be updated.
+
+
+
+        ### Request Body (Partial Update):
+
+        - The request body should contain the fields to be updated. Partial updates are allowed.
+
+            - `username` (str): Username for the user.
+
+            - `username` (str): Unique user handle.
+
+            - `email` (str): Email address for the user.
+
+            - `first_name` (str): User's first name.
+
+            - `last_name` (str): User's last name.
+
+            - `gender` (str): User's gender.
+
+            - `biography` (str): User's biography.
+
+            - `profile_img` (file): Profile image for the user.
+
+            - `header_photo` (file): Header photo for the user profile.
+
+            - `email_substitute` (str): Substitute email address for communication.
+
+            - `website` (str): User's website URL.
+
+            - `location` (str): User's location.
+
+            - `birth_date` (str): User's date of birth.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        User information updated successfully.
+
+            - `message` (str): Confirmation message.
+
+
+
+        ### Response (Failure):
+
+        - `400 Bad Request`:
+        Invalid input data. Check the response for details.
+
+        - `403 Forbidden`:
+        The user is not allowed to update the account.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUser'
+          description: ''
+    delete:
+      operationId: users_destroy
+      description: |-
+        Deactivate user account.
+
+
+        Deactivation of a user account. To deactivate the account,
+        the user must be authenticated and can only deactivate their own account.
+
+
+        ### Path Parameter:
+
+        - `username` (str):
+        The handle of the user account to be deactivated.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        User account deactivated successfully.
+
+            - `message` (str): Confirmation message.
+
+
+
+        ### Response (Failure):
+
+        - `403 Forbidden`:
+        The user is not allowed to deactivate the account.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /users/check-field-availability/{field_name}/{value}/:
+    get:
+      operationId: users_check_field_availability_retrieve
+      description: |-
+        Check the availability of a field value.
+
+
+        Checking the availability of a specific field value(email, username) for user registration.
+
+        The field_name and value are provided as path parameters.
+
+
+        ### Path Parameters:
+
+        - `field_name` (str): The name of the field to check ('username', 'email').
+
+        - `value` (str): The value to check for availability.
+
+
+
+        ### Request:
+
+        - The request body is not required.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Field value availability checked successfully.
+
+            - `available` (bool): Indicates whether the field value is available or not.
+
+            - `message` (str): Indicates that the field_name field with that value already exists.
+
+            - `suggestions` (list of str, optional): Suggestions for available usernames (if applicable).
+
+
+
+        ### Response (Failure):
+
+        - `400 BAD REQUEST`:
+        If the field_name is different than username or email.
+      parameters:
+      - in: path
+        name: field_name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: value
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /users/confirm-email/{uidb64}/{token}/:
+    get:
+      operationId: users_confirm_email_retrieve
+      description: |-
+        Activate a user account using the provided UID and token.
+
+
+        This endpoint is used to activate a user account by confirming the provided UID and token.
+
+
+        ### Path Parameters:
+
+        - `uidb64` (str): The base64-encoded user ID.
+
+        - `token` (str): The activation token.
+
+
+
+        ### Response (Success):
+
+        - `200 OK`:
+        Account activated successfully.
+
+            - `detail` (str): Message indicating successful account activation.
+
+
+
+        ### Response (Failure):
+
+        - `400 BAD REQUEST`:
+        Activation link is invalid.
+
+            - `detail` (str): Message indicating that the activation link is invalid.
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uidb64
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    BaseBook:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: integer
+          nullable: true
+        language:
+          type: string
+          maxLength: 50
+        genre:
+          type: string
+          nullable: true
+        publisher:
+          type: integer
+          nullable: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: uri
+        publication_date:
+          type: string
+          format: date
+        slug:
+          type: string
+          nullable: true
+          maxLength: 250
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - cover
+      - genre
+      - language
+      - publication_date
+      - title
+    BaseGenre:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        slug:
+          type: string
+          nullable: true
+          maxLength: 160
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - name
+    BasePublisher:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        country:
+          type: string
+          maxLength: 100
+      required:
+      - country
+      - id
+      - name
+    ContentType:
+      type: object
+      properties:
+        model:
+          type: string
+          title: Python model class name
+          maxLength: 100
+      required:
+      - model
+    CreateAuthorRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nationality:
+          type: string
+          nullable: true
+          maxLength: 50
+        birth_date:
+          type: string
+          format: date
+        death_date:
+          type: string
+          format: date
+          nullable: true
+        biography:
+          type: string
+          minLength: 1
+        picture:
+          type: string
+          format: binary
+      required:
+      - biography
+      - birth_date
+      - first_name
+      - last_name
+      - picture
+    CreateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          maxLength: 50
+        genre:
+          type: integer
+        publisher:
+          type: integer
+          nullable: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: binary
+        publication_date:
+          type: string
+          format: date
+      required:
+      - author
+      - cover
+      - genre
+      - language
+      - publication_date
+      - title
+    CreateFavoriteRequest:
+      type: object
+      properties:
+        book:
+          type: string
+          nullable: true
+      required:
+      - book
+    CreateReservationRequest:
+      type: object
+      properties:
+        book:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        notes:
+          type: string
+          nullable: true
+      required:
+      - book
+      - end_date
+      - start_date
+    CreateUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        password2:
+          type: string
+        password:
+          type: string
+          maxLength: 128
+        create_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date of creation
+        modify_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date of last modification
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        username:
+          type: string
+          maxLength: 100
+        profile_img:
+          type: string
+          format: uri
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - create_at
+      - email
+      - first_name
+      - id
+      - last_name
+      - modify_at
+      - password
+      - password2
+      - username
+    CreateUserRequest:
+      type: object
+      properties:
+        password2:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        profile_img:
+          type: string
+          format: binary
+          nullable: true
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - password2
+      - username
+    CreditRetrieve:
+      type: object
+      properties:
+        amount:
+          type: integer
+        user:
+          type: string
+      required:
+      - user
+    Detail:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    GenericGenre:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+      required:
+      - name
+    GenericGenreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+      required:
+      - name
+    GenericPublisherRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        country:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - country
+      - name
+    ListAuthor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        nationality:
+          type: string
+          nullable: true
+          maxLength: 50
+        birth_date:
+          type: string
+          format: date
+        death_date:
+          type: string
+          format: date
+          nullable: true
+        biography:
+          type: string
+        picture:
+          type: string
+          format: uri
+      required:
+      - biography
+      - birth_date
+      - first_name
+      - id
+      - last_name
+      - picture
+    ListBook:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          allOf:
+          - $ref: '#/components/schemas/ListAuthor'
+          readOnly: true
+        language:
+          type: string
+          maxLength: 50
+        genre:
+          allOf:
+          - $ref: '#/components/schemas/BaseGenre'
+          readOnly: true
+        publisher:
+          allOf:
+          - $ref: '#/components/schemas/BasePublisher'
+          readOnly: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: uri
+        publication_date:
+          type: string
+          format: date
+        slug:
+          type: string
+          nullable: true
+          maxLength: 250
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - author
+      - cover
+      - genre
+      - language
+      - publication_date
+      - publisher
+      - title
+    ListFavorite:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          allOf:
+          - $ref: '#/components/schemas/ListAuthor'
+          readOnly: true
+        language:
+          type: string
+          maxLength: 50
+        genre:
+          allOf:
+          - $ref: '#/components/schemas/BaseGenre'
+          readOnly: true
+        publisher:
+          allOf:
+          - $ref: '#/components/schemas/BasePublisher'
+          readOnly: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: uri
+        publication_date:
+          type: string
+          format: date
+        slug:
+          type: string
+          nullable: true
+          maxLength: 250
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - author
+      - cover
+      - genre
+      - language
+      - publication_date
+      - publisher
+      - title
+    ListProfileUser:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        profile_img:
+          type: string
+          format: uri
+          nullable: true
+        create_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date of creation
+      required:
+      - create_at
+      - email
+      - first_name
+      - last_name
+      - username
+    ListReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        initial_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        returned_date:
+          type: string
+          format: date
+          nullable: true
+        penalty_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        final_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        book:
+          allOf:
+          - $ref: '#/components/schemas/ListBook'
+          readOnly: true
+      required:
+      - book
+      - created_at
+      - end_date
+      - id
+      - initial_price
+      - start_date
+    ListSimpleUser:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 100
+        profile_img:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - username
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 250
+        message:
+          type: string
+          nullable: true
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        content_type:
+          $ref: '#/components/schemas/ContentType'
+        content_object:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - content_object
+      - content_type
+      - created_at
+      - id
+      - title
+    PaginatedBaseGenreList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseGenre'
+    PaginatedBasePublisherList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasePublisher'
+    PaginatedListAuthorList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListAuthor'
+    PaginatedListBookList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListBook'
+    PaginatedListFavoriteList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListFavorite'
+    PaginatedListReservationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListReservation'
+    PaginatedListSimpleUserList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListSimpleUser'
+    PaginatedNotificationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PasswordChangeRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        confirm_new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - confirm_new_password
+      - new_password
+      - old_password
+    PasswordCheckMatch:
+      type: object
+      properties:
+        password:
+          type: string
+        password2:
+          type: string
+      required:
+      - password
+      - password2
+    PasswordCheckMatchRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+        password2:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - password2
+    PasswordRecoveryConfirmRequest:
+      type: object
+      properties:
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        confirm_new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - confirm_new_password
+      - new_password
+    PasswordRecoveryRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PasswordRecoveryRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PatchedCreditPatchRequest:
+      type: object
+      properties:
+        subtract:
+          type: integer
+    PatchedGenericGenreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+    PatchedGenericPublisherRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        country:
+          type: string
+          minLength: 1
+          maxLength: 100
+    PatchedPatchReservationRequest:
+      type: object
+      properties:
+        returned_date:
+          type: string
+          format: date
+          nullable: true
+        retired:
+          type: boolean
+    PatchedUpdateAuthorRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        nationality:
+          type: string
+          nullable: true
+          maxLength: 50
+        birth_date:
+          type: string
+          format: date
+        death_date:
+          type: string
+          format: date
+          nullable: true
+        biography:
+          type: string
+          minLength: 1
+        picture:
+          type: string
+          format: binary
+    PatchedUpdateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: integer
+        language:
+          type: string
+          minLength: 1
+          maxLength: 50
+        genre:
+          type: integer
+        publisher:
+          type: integer
+          nullable: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: binary
+        publication_date:
+          type: string
+          format: date
+    PatchedUpdateUserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        profile_img:
+          type: string
+          format: binary
+          nullable: true
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+    PenaltyList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+          description: Date on which the penalty will end. If is None/null, it means
+            that the penalty is permanent.
+        complete:
+          type: boolean
+        user:
+          type: string
+      required:
+      - id
+      - user
+    PenaltyRetrieve:
+      type: object
+      properties:
+        penalty:
+          allOf:
+          - $ref: '#/components/schemas/PenaltyList'
+          readOnly: true
+        strikes:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrikeList'
+          readOnly: true
+      required:
+      - penalty
+      - strikes
+    StatusEnum:
+      enum:
+      - canceled_user
+      - canceled_system
+      - confirmed
+      - available
+      - retired
+      - expired
+      - waiting_payment
+      - completed
+      type: string
+      description: |-
+        * `canceled_user` - Canceled by the user
+        * `canceled_system` - Canceled by the system
+        * `confirmed` - Confirmed
+        * `available` - Available for Pickup
+        * `retired` - Retired
+        * `expired` - End Time Expired - Must be Returned
+        * `waiting_payment` - Waiting payment
+        * `completed` - Completed
+    StrikeList:
+      type: object
+      properties:
+        reason:
+          type: string
+        reservation:
+          allOf:
+          - $ref: '#/components/schemas/ListReservation'
+          readOnly: true
+      required:
+      - reason
+      - reservation
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    UnavailableReservationPeriods:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+      required:
+      - end_date
+      - start_date
+    UpdateBook:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: integer
+        language:
+          type: string
+          maxLength: 50
+        genre:
+          type: integer
+        publisher:
+          type: integer
+          nullable: true
+        edition:
+          type: integer
+        amount_pages:
+          type: integer
+        cover:
+          type: string
+          format: uri
+        publication_date:
+          type: string
+          format: date
+      required:
+      - author
+      - cover
+      - genre
+      - language
+      - publication_date
+      - title
+    UpdateUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        modify_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Date of last modification
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        username:
+          type: string
+          maxLength: 100
+        profile_img:
+          type: string
+          format: uri
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+      - modify_at
+      - username
+    UpdateUserRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        username:
+          type: string
+          minLength: 1
+          maxLength: 100
+        profile_img:
+          type: string
+          format: binary
+          nullable: true
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - email
+      - first_name
+      - last_name
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

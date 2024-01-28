@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  redis:
+    container_name: redis
+    image: redis:7.0.15-alpine
+  # db:
+  #   image: mysql:8.0.35-debian
+  #   volumes:
+  #     -
+  #   env_file:
+  #     - .env
+  api:
+    container_name: django-api
+    build:
+      context: ./
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./:/usr/src/api/
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  celery:
+    container_name: celery
+    build:
+      context: ./
+    command: celery -A library worker -l INFO
+    volumes:
+      - ./:/usr/src/api/
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - api
+
+  celery-beat:
+    container_name: celery-beat
+    build: ./
+    command: celery -A library beat -l info
+    volumes:
+      - ./:/usr/src/api/
+    depends_on:
+      - redis
+      - api
+      - celery
