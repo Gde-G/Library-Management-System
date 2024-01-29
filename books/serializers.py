@@ -132,19 +132,20 @@ class CreateBookSerializer(BaseBookSerializer):
 
 
 class ListBookSerializer(BaseBookSerializer):
-    author = ListAuthorSerializer(read_only=True)
+    author = ListAuthorSerializer(read_only=True, required=False)
     genre = BaseGenreSerializer(read_only=True)
-    publisher = BasePublisherSerializer(read_only=True)
+    publisher = BasePublisherSerializer(read_only=True, required=False)
 
     def to_representation(self, instance):
         base_representation = super().to_representation(instance)
 
         author_representation = self.fields['author'].to_representation(
-            instance.author)
+            instance.author)if instance.author else None
         genre_representation = self.fields['genre'].to_representation(
             instance.genre)
+
         publisher_representation = self.fields['publisher'].to_representation(
-            instance.publisher)
+            instance.publisher) if instance.publisher else None
 
         base_representation['author'] = author_representation
         base_representation['genre'] = genre_representation

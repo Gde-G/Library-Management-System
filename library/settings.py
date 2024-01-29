@@ -92,9 +92,14 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST':  os.environ.get('DB_HOST'),
+        'PORT':  os.environ.get('DB_PORT'),
     }
 }
 
@@ -141,9 +146,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -218,6 +226,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = list(os.environ.get('CORS_ALLOWED_ORIGINS').split(','))
 CORS_ORIGIN_WHITELIST = list(os.environ.get(
     'CORS_ORIGIN_WHITELIST').split(','))
+CSRF_TRUSTED_ORIGINS = list(os.environ.get('CSRF_TRUSTED_ORIGINS').split(','))
 
 
 # -----CELERY SETTINGS---------------

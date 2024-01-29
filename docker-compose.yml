@@ -4,26 +4,45 @@ services:
   redis:
     container_name: redis
     image: redis:7.0.15-alpine
-  # db:
-  #   image: mysql:8.0.35-debian
-  #   volumes:
-  #     -
-  #   env_file:
-  #     - .env
+  db:
+    container_name: mysql-db
+    image: mysql:8.0.35-debian
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
   api:
     container_name: django-api
     build:
       context: ./
-    command: python3 manage.py runserver 0.0.0.0:8000
+      dockerfile: Dockerfile.prod
+    command: gunicorn library.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./:/usr/src/api/
-    ports:
-      - 8000:8000
+      - ./static_volume:/home/app/api/staticfiles
+      - ./media_volume:/home/app/web/mediafiles
+    expose:
+      - 8000
     env_file:
       - .env
     depends_on:
       - redis
-
+      - db
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./static_volume:/home/app/api/staticfiles
+      - ./media_volume:/home/app/web/mediafiles
+    depends_on:
+      - api
   celery:
     container_name: celery
     build:
@@ -47,3 +66,8 @@ services:
       - redis
       - api
       - celery
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
