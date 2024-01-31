@@ -223,7 +223,6 @@ SIMPLE_JWT = {
 
 # CORS
 
-CORS_ALLOWED_ORIGINS = list(os.environ.get('CORS_ALLOWED_ORIGINS').split(','))
 CORS_ORIGIN_WHITELIST = list(os.environ.get(
     'CORS_ORIGIN_WHITELIST').split(','))
 CSRF_TRUSTED_ORIGINS = list(os.environ.get('CSRF_TRUSTED_ORIGINS').split(','))

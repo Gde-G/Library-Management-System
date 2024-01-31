@@ -18,7 +18,7 @@ __pycache__
 .idea
 *.pyc
 
-
+venv
 # Ignore Celery-related files
 celerybeat-schedule
 celerybeat.pid
