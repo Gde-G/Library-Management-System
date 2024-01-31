@@ -52,7 +52,7 @@ services:
     container_name: celery
     build:
       context: ./
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.celery.prod
     command: celery -A library worker -l INFO
     volumes:
       - ./:/usr/src/api/
@@ -66,10 +66,12 @@ services:
     container_name: celery-beat
     build: 
       context: ./
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.celery.prod
     command: celery -A library beat -l info
     volumes:
       - ./:/usr/src/api/
+    env_file:
+      - .env
     depends_on:
       - redis
       - api
