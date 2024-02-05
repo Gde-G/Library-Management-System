@@ -137,15 +137,16 @@ class AuthorViewSet(viewsets.ModelViewSet):
             - `401 Unauthorized`:
             If the user is not authenticated.\n
         """
+        try:
+            author_serializer = self.get_serializer_class()(data=request.data)
 
-        author_serializer = self.get_serializer_class()(data=request.data)
-
-        if author_serializer.is_valid():
-            author_serializer.save()
-            return Response({'detail': 'Author successfully created'}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(author_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            if author_serializer.is_valid():
+                author_serializer.save()
+                return Response({'detail': 'Author successfully created'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(author_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'detail': 'Something fail, try again later.', 'error': f'e'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     @extend_schema(
         responses={200: ListAuthorSerializer}
     )

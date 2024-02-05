@@ -43,6 +43,7 @@ services:
     ports:
       - 80:80
     volumes:
+      - ./:/usr/src/api/
       - static_file:/home/app/api/staticfiles
       - media_file:/home/app/api/mediafiles
     depends_on:
