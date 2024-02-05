@@ -146,7 +146,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
             else:
                 return Response(author_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({'detail': 'Something fail, try again later.', 'error': f'e'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'detail': 'Something fail, try again later.', 'error': f'{e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     @extend_schema(
         responses={200: ListAuthorSerializer}
     )
