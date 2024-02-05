@@ -13,6 +13,7 @@ fi
 
 echo "Apply DB migrations"
 python3 manage.py migrate
+python3 manage.py createsuperifnone
 
 exec "$@"
 
