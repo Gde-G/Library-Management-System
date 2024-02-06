@@ -106,8 +106,8 @@ class BaseBookSerializer(serializers.ModelSerializer):
 
 
 class CreateBookSerializer(BaseBookSerializer):
-    genre = serializers.PrimaryKeyRelatedField(
-        queryset=Genre.objects.all(), allow_null=False, required=True)
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(), allow_null=False, required=True, slug_field='slug')
     author = serializers.PrimaryKeyRelatedField(
         queryset=Author.objects.all(), allow_null=False, required=True)
     publisher = serializers.PrimaryKeyRelatedField(
