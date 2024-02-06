@@ -181,7 +181,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self, lookup=None, book=None, start_date=None, end_date=None):
         if lookup:
-            return Reservation.objects.select_related('book').filter(user=self.request.user, id=lookup).first()
+            return Reservation.objects.select_related('book').filter(id=lookup).first()
 
         if book and start_date and end_date:
             overlapping_reservations = Reservation.objects.select_related('book').filter(
