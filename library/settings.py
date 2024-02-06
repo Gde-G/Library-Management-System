@@ -242,7 +242,6 @@ SPECTACULAR_SETTINGS = {
 
 - 🚀 RESTful Excellence: Crafted with Django REST Framework for robust and scalable API interactions.
 - 🛢️ MySQL Backend: Efficient data management with MySQL, ensuring reliability.
-- 🌐 AWS RDS Integration: Optimal scalability and management with AWS RDS.
 - 🐳 Dockerized Deployment: Experience seamless deployment and scalability with Docker.
 - 🔧 Celery for Async Tasks: Seamlessly handle background tasks asynchronously with Celery.
 - 📡 Redis Message Broker: Enhance communication efficiency using Redis as the message broker.
