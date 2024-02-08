@@ -59,6 +59,8 @@ class Reservation(models.Model):
 
         return super().save(*args, **kwargs)
 
+    def __str__(self) -> str:
+        return f'{self.username}, reserve the book {self.book} from {self.start_date} to {self.end_date}. Status, {self.status}'
 
 class Credit(models.Model):
     user = models.OneToOneField(User, to_field='username',
