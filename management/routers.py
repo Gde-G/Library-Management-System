@@ -1,10 +1,10 @@
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 from .views import (
     FavoriteViewSet, ReservationViewSet, PenaltyViewSet,
     StrikeViewSet, NotificationViewSet, CreditViewSet
 )
 
-router = DefaultRouter()
+router = SimpleRouter()
 
 router.register(r'fav', FavoriteViewSet, basename='fav')
 router.register(r'reservation', ReservationViewSet, basename='reservation')

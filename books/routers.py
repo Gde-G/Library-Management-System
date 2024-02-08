@@ -1,7 +1,7 @@
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 from .views import AuthorViewSet, GenreViewSet, PublisherViewSet, BookViewSet
 
-router = DefaultRouter()
+router = SimpleRouter()
 
 router.register(r'author', AuthorViewSet, basename='author')
 router.register(r'genre', GenreViewSet, basename='genre')
